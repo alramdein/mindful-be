@@ -185,20 +185,18 @@ const isUserExist = (sub) =>
 const addUser = (sub, name, avatar, updated_at) =>
   new Promise(async (resolve, reject) => {
     try {
-      if (!isUserExist(sub)) {
-        const query = `INSERT INTO users(sub, name, avatar, created_at, updated_at) 
-                        VALUES(${sub}, ${name}, ${avatar}, now(), ${updated_at}`;
+      const query = `INSERT INTO users(sub, name, avatar, created_at, updated_at) 
+                        VALUES("${sub}", "${name}", "${avatar}", now(), "${updated_at}")`;
 
-        connection.query(query, (error, results) => {
-          if (error) {
-            console.log(error);
-            reject(error);
-            return;
-          }
-          console.log("Message stored.");
-          resolve();
-        });
-      }
+      connection.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+        console.log("User added.");
+        resolve();
+      });
     } catch (err) {
       console.error(err);
       reject(err);

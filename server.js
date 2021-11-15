@@ -94,6 +94,32 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   );
 });
 
+app.post("/user", async (req, res) => {
+  if (
+    !req.body.sub ||
+    !req.body.name ||
+    !req.body.avatar ||
+    !req.body.updated_at
+  ) {
+    return res.json({
+      success: false,
+      message: "Parameters is not satisfied.",
+    });
+  }
+
+  await database.addUser(
+    req.body.sub,
+    req.body.name,
+    req.body.avatar,
+    req.body.updated_at
+  );
+
+  return res.json({
+    success: true,
+    message: "Sucessfully add new user.",
+  });
+});
+
 app.post("/chat/room", async (req, res) => {
   if (!req.body.owner_id || !req.body.partner_id) {
     return res.json({
