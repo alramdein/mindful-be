@@ -54,7 +54,28 @@ const updateMessageIsSeenByIds = (ids) =>
     }
   });
 
+const getAllMessageByRoomid = (roomidString) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const room_id = await ChatRoomModel.getRoomId(roomidString);
+      const query = `SELECT * FROM messages WHERE room_id = ${room_id}`;
+
+      db.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+        resolve(results);
+      });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+
 module.exports = {
   storeMessage,
   updateMessageIsSeenByIds,
+  getAllMessageByRoomid,
 };
