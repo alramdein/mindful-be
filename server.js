@@ -1,5 +1,7 @@
 const env = require("dotenv").config();
 const express = require("express");
+const crypto = require("crypto");
+const bodyParser = require("body-parser");
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
@@ -13,7 +15,15 @@ const path = require("path");
 const app = express();
 const database = require("./database");
 const s3 = require("./s3");
+const { initSocket } = require("./modules/socket");
+
+const http = require("http");
+const server = http.createServer(app);
+initSocket(server);
+
 app.use(express.static("build"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 
 // Getting images from S3 bucket
 app.get("/images/:filename", (req, res) => {
@@ -84,9 +94,51 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   );
 });
 
+app.post("/chat/room", async (req, res) => {
+  if (!req.body.owner_id || !req.body.partner_id) {
+    return res.json({
+      success: false,
+      message: "Parameters is not satisfied.",
+    });
+  }
+
+  const roomid = crypto.randomBytes(3 * 4).toString("base64");
+  console.log(typeof roomid);
+  await database.storeChatRoom(roomid, req.body.owner_id, req.body.partner_id);
+
+  return res.json({
+    success: true,
+    roomid: roomid,
+  });
+});
+
+app.put("/message/read", async (req, res) => {
+  if (!req.body.message_ids) {
+    return res.json({
+      success: false,
+      message: "Parameters is not satisfied.",
+    });
+  }
+
+  const messageIds = JSON.parse(req.body.message_ids);
+  if (!Array.isArray(messageIds)) {
+    return res.json({
+      success: false,
+      message: "message_ids is not array.",
+    });
+  }
+
+  await database.updateMessageIsSeenByIds(messageIds);
+
+  return res.json({
+    success: true,
+    message: "Successfully update message's isSeen",
+  });
+});
+
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`listening on port ${port} llll`);
 });
 
