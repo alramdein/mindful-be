@@ -4,7 +4,7 @@ const db = require("../database");
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost",
+      origin: process.env.SOCKET_CORS_ORIGIN_HOST || "http://localhost",
       methods: ["GET", "POST"],
     },
   });
