@@ -13,13 +13,17 @@ const unlinkFile = util.promisify(fs.unlink);
 const path = require("path");
 
 const app = express();
-const database = require("./database");
 const s3 = require("./s3");
 const { initSocket } = require("./modules/socket");
 
 const http = require("http");
 const server = http.createServer(app);
 initSocket(server);
+
+const PostModel = require("./models/Post");
+const UserModel = require("./models/User");
+const MessageModel = require("./models/Message");
+const ChatRoomModel = require("./models/ChatRoom");
 
 app.use(express.static("build"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,7 +44,7 @@ app.get("/images/:filename", (req, res) => {
 // });
 
 app.get("/posts", (req, res) => {
-  database.getPosts((error, posts) => {
+  PostModel.getPosts((error, posts) => {
     console.log("get posts", error, posts);
     if (error) {
       res.send({ error: error.message });
@@ -70,7 +74,7 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   const tags = req.body.tags;
 
   const image_url = `/images/${filename}`;
-  database.createPost(
+  PostModel.createPost(
     description,
     image_url,
     timestamp,
@@ -107,7 +111,7 @@ app.post("/user", async (req, res) => {
     });
   }
 
-  await database.addUser(
+  await UserModel.addUser(
     req.body.sub,
     req.body.name,
     req.body.avatar,
@@ -129,8 +133,17 @@ app.post("/chat/room", async (req, res) => {
   }
 
   const roomid = crypto.randomBytes(3 * 4).toString("base64");
-  console.log(typeof roomid);
-  await database.storeChatRoom(roomid, req.body.owner_id, req.body.partner_id);
+
+  await ChatRoomModel.storeChatRoom(
+    roomid,
+    req.body.owner_id,
+    req.body.partner_id
+  ).catch((err) => {
+    res.status(err.status).json({
+      success: false,
+      message: err.msg,
+    });
+  });
 
   return res.json({
     success: true,
@@ -154,7 +167,7 @@ app.put("/message/read", async (req, res) => {
     });
   }
 
-  await database.updateMessageIsSeenByIds(messageIds);
+  await MessageModel.updateMessageIsSeenByIds(messageIds);
 
   return res.json({
     success: true,

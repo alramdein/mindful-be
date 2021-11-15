@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const db = require("../database");
+const MessageModel = require("../models/Message");
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -30,7 +30,7 @@ const initSocket = (server) => {
       if (!newMessage.timestamp)
         newMessage.timestamp = new Date().toISOString();
 
-      db.storeMessage(
+      MessageModel.storeMessage(
         newMessage.user_id,
         newMessage.room_id,
         newMessage.message,
