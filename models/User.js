@@ -49,7 +49,7 @@ const addUser = (sub, name, avatar, updated_at) =>
 const getUserIdBySub = (sub) =>
   new Promise(async (resolve, reject) => {
     try {
-      const query = `SELECT * FROM users WHERE sub = ${sub}`;
+      const query = `SELECT * FROM users WHERE sub = "${sub}"`;
 
       db.query(query, (error, results) => {
         if (error) {
@@ -57,7 +57,7 @@ const getUserIdBySub = (sub) =>
           reject(error);
           return;
         }
-        console.log(results);
+
         if (results.length === 0) {
           reject({
             status: 400,
@@ -74,8 +74,29 @@ const getUserIdBySub = (sub) =>
     }
   });
 
+const getAllPartner = (ownerSub) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const query = `SELECT * FROM users WHERE sub NOT LIKE "${ownerSub}"`;
+
+      db.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+
+        resolve(results);
+      });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+
 module.exports = {
   addUser,
   isUserExist,
   getUserIdBySub,
+  getAllPartner,
 };

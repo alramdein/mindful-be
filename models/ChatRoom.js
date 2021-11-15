@@ -20,12 +20,13 @@ const storeRoomid = (roomid) =>
     }
   });
 
-const storeChatRoom = (roomidString, ownerSub, partner_id) =>
+const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
   new Promise(async (resolve, reject) => {
     try {
       const room_id = await storeRoomid(roomidString);
       const owner_id = await UserModel.getUserIdBySub(ownerSub);
-      // get user_id by sub
+      const partner_id = await UserModel.getUserIdBySub(partnerSub);
+
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
 

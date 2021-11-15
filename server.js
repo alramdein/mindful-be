@@ -20,8 +20,9 @@ const http = require("http");
 const server = http.createServer(app);
 initSocket(server);
 
+const router = require("./router");
+
 const PostModel = require("./models/Post");
-const UserModel = require("./models/User");
 const MessageModel = require("./models/Message");
 const ChatRoomModel = require("./models/ChatRoom");
 
@@ -98,34 +99,8 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   );
 });
 
-app.post("/user", async (req, res) => {
-  if (
-    !req.body.sub ||
-    !req.body.name ||
-    !req.body.avatar ||
-    !req.body.updated_at
-  ) {
-    return res.json({
-      success: false,
-      message: "Parameters is not satisfied.",
-    });
-  }
-
-  await UserModel.addUser(
-    req.body.sub,
-    req.body.name,
-    req.body.avatar,
-    req.body.updated_at
-  );
-
-  return res.json({
-    success: true,
-    message: "Sucessfully add new user.",
-  });
-});
-
 app.post("/chat/room", async (req, res) => {
-  if (!req.body.owner_id || !req.body.partner_id) {
+  if (!req.body.owner_sub || !req.body.partner_id) {
     return res.json({
       success: false,
       message: "Parameters is not satisfied.",
@@ -136,7 +111,7 @@ app.post("/chat/room", async (req, res) => {
 
   await ChatRoomModel.storeChatRoom(
     roomid,
-    req.body.owner_id,
+    req.body.owner_sub,
     req.body.partner_id
   ).catch((err) => {
     res.status(err.status).json({
@@ -174,6 +149,9 @@ app.put("/message/read", async (req, res) => {
     message: "Successfully update message's isSeen",
   });
 });
+
+/* the rest of the router */
+app.use(router);
 
 const port = process.env.PORT || 8080;
 
