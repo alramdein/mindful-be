@@ -30,7 +30,7 @@ const updateReadMessage = async (req, res) => {
 };
 
 const getAllMessageByRoomid = async (req, res) => {
-  if (!req.body.room_id) {
+  if (!req.query.room_id) {
     return res.json({
       success: false,
       message: "Parameters is not satisfied.",
@@ -38,7 +38,7 @@ const getAllMessageByRoomid = async (req, res) => {
   }
 
   const messages = await MessageModel.getAllMessageByRoomid(
-    req.body.room_id
+    req.query.room_id
   ).catch((err) =>
     res.status(err.status).json({
       success: false,

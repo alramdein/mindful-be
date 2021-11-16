@@ -58,7 +58,10 @@ const getAllMessageByRoomid = (roomidString) =>
   new Promise(async (resolve, reject) => {
     try {
       const room_id = await ChatRoomModel.getRoomId(roomidString);
-      const query = `SELECT * FROM messages WHERE room_id = ${room_id}`;
+      const query = `SELECT *, m.id as id FROM messages m 
+                    JOIN users u ON m.user_id = u.id
+                    JOIN rooms r ON m.room_id = r.id
+                    WHERE m.room_id = ${room_id}`;
 
       db.query(query, (error, results) => {
         if (error) {
