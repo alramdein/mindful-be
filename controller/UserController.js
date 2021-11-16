@@ -16,7 +16,7 @@ const addUser = async (req, res) => {
   await UserModel.addUser(
     req.body.sub,
     req.body.name,
-    req.body.avatar,
+    req.body.picture,
     req.body.updated_at
   );
 
