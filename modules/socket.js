@@ -36,7 +36,7 @@ const initSocket = (server) => {
       }
 
       MessageModel.storeMessage(
-        newMessage.user_id,
+        newMessage.sub,
         newMessage.room_id,
         newMessage.message,
         newMessage.timestamp
