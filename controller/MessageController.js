@@ -16,7 +16,12 @@ const updateReadMessage = async (req, res) => {
     });
   }
 
-  await MessageModel.updateMessageIsSeenByIds(messageIds);
+  await MessageModel.updateMessageIsSeenByIds(messageIds).catch((err) => {
+    res.json({
+      success: false,
+      message: err,
+    });
+  });
 
   return res.json({
     success: true,
@@ -32,7 +37,14 @@ const getAllMessageByRoomid = async (req, res) => {
     });
   }
 
-  const messages = await MessageModel.getAllMessageByRoomid(req.body.room_id);
+  const messages = await MessageModel.getAllMessageByRoomid(
+    req.body.room_id
+  ).catch((err) =>
+    res.status(err.status).json({
+      success: false,
+      message: err.msg,
+    })
+  );
 
   return res.json({
     success: true,

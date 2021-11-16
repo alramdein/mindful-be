@@ -17,6 +17,7 @@ const storeRoomid = (roomid) =>
       });
     } catch (err) {
       console.log(err);
+      reject(err);
     }
   });
 
