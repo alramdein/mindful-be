@@ -22,12 +22,50 @@ const storeRoomid = (roomid) =>
     }
   });
 
+const checkUserChatExist = (owner_id, partner_id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const query = `SELECT r.roomid FROM chat_rooms cr 
+                    LEFT JOIN rooms r ON cr.room_id = r.id
+                    WHERE (cr.owner_id = ${owner_id} AND cr.partner_id = ${partner_id})
+                    OR (cr.owner_id = ${partner_id} AND cr.partner_id = ${owner_id})
+                    LIMIT 1`;
+
+      db.executeQuery(query, async (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+
+        if (results.length > 0) {
+          resolve({ roomid: results[0] });
+          return;
+        }
+        resolve(0);
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+
 const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
   new Promise(async (resolve, reject) => {
     try {
       const room_id = await storeRoomid(roomidString);
       const owner_id = await UserModel.getUserIdBySub(ownerSub);
       const partner_id = await UserModel.getUserIdBySub(partnerSub);
+      const isUserChatExist = await checkUserChatExist(owner_id, partner_id);
+      const partnerDetail = await UserModel.getUserById(partner_id);
+
+      if (isUserChatExist !== 0) {
+        resolve({
+          ...isUserChatExist.roomid,
+          partner_detail: partnerDetail[0],
+        });
+        return;
+      }
 
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
@@ -39,7 +77,7 @@ const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
           return;
         }
         console.log("Chat room stored.");
-        const partnerDetail = await UserModel.getUserById(partner_id);
+
         resolve(partnerDetail);
       });
     } catch (err) {

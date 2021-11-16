@@ -1,30 +1,5 @@
 const db = require("../database/mysql");
 
-const isUserExist = (sub) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const query = `SELECT * FROM users WHERE sub = ${sub}`;
-
-      db.executeQuery(query, (error, results) => {
-        if (error) {
-          console.log(error);
-          reject(error);
-          return;
-        }
-
-        if (!results) {
-          resolve(0);
-          return;
-        }
-
-        resolve(1);
-      });
-    } catch (err) {
-      console.error(err);
-      reject(err);
-    }
-  });
-
 const checkUserExistBySub = (sub) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -161,7 +136,6 @@ const getUserById = (id) =>
 
 module.exports = {
   addUser,
-  isUserExist,
   getUserIdBySub,
   getAllPartner,
   getUserById,

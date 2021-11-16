@@ -9,9 +9,9 @@ const createChatRoom = async (req, res) => {
     });
   }
 
-  const roomid = crypto.randomBytes(3 * 4).toString("base64");
+  let roomid = crypto.randomBytes(3 * 4).toString("base64");
 
-  const partnerDetails = await ChatRoomModel.storeChatRoom(
+  const chatRoomDetail = await ChatRoomModel.storeChatRoom(
     roomid,
     req.body.owner_sub,
     req.body.partner_sub
@@ -21,12 +21,19 @@ const createChatRoom = async (req, res) => {
       message: err.msg,
     });
   });
+  console.log(chatRoomDetail);
+  if (chatRoomDetail.roomid) {
+    roomid = chatRoomDetail.roomid;
+    partnerDetail = chatRoomDetail.partner_detail;
+  } else {
+    partnerDetail = chatRoomDetail[0];
+  }
 
   return res.json({
     success: true,
     roomid: roomid,
     partner_detail: {
-      ...partnerDetails[0],
+      ...partnerDetail,
     },
   });
 };
