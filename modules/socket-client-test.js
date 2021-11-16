@@ -11,7 +11,7 @@ socket.emit("newMessage", {
   user_id: 1,
   room_id: "E1T70lNKKay5EjVk",
   message: "halo?",
-  // timestamp: "2021-11-01 20:10:02",
+  timestamp: "2021-11-01 20:10:02",
 });
 
 socket.on("newMessage", (newMessage) => {
