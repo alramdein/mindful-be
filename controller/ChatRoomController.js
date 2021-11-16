@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const ChatRoomModel = require("../models/ChatRoom");
 
 const createChatRoom = async (req, res) => {
-  if (!req.body.owner_sub || !req.body.partner_id) {
+  if (!req.body.owner_sub || !req.body.partner_sub) {
     return res.json({
       success: false,
       message: "Parameters is not satisfied.",
@@ -14,7 +14,7 @@ const createChatRoom = async (req, res) => {
   const partnerDetails = await ChatRoomModel.storeChatRoom(
     roomid,
     req.body.owner_sub,
-    req.body.partner_id
+    req.body.partner_sub
   ).catch((err) => {
     res.status(err.status).json({
       success: false,
