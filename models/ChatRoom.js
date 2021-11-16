@@ -13,6 +13,7 @@ const storeRoomid = (roomid) =>
           return;
         }
         console.log("Roomid stored.");
+        console.log(results);
         resolve(results.insertId);
       });
     } catch (err) {
@@ -77,7 +78,6 @@ const getRoomId = (roomidString) =>
 const getAllRoomByOwnerSub = (ownerSub, keyword) =>
   new Promise((resolve, reject) => {
     try {
-      // const room
       if (!keyword) keyword = "";
 
       const query = `SELECT r.roomid as room_id, up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
@@ -85,7 +85,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                     FROM chat_rooms cr 
                     JOIN users uo ON cr.owner_id = uo.id 
                     JOIN users up ON cr.partner_id = up.id 
-                    JOIN messages m ON m.id = (
+                    LEFT JOIN messages m ON m.id = (
                         SELECT id FROM messages
                         WHERE room_id = cr.room_id
                         ORDER BY timestamp DESC
@@ -93,8 +93,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                     )
                     JOIN rooms r ON cr.room_id = r.id
                     WHERE uo.sub = "${ownerSub}"
-                    AND up.name LIKE "%${keyword}%"
-                    AND cr.room_id = m.room_id`;
+                    AND up.name LIKE "%${keyword}%"`;
 
       db.query(query, (error, results) => {
         if (error) {
