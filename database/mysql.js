@@ -11,17 +11,19 @@ const executeQuery = (query, callback) => {
   pool.getConnection((err, connection) => {
     if (err) {
       connection.release();
-      throw err;
+      callback(err);
     }
+
     connection.query(query, (err, rows) => {
       connection.release();
       if (!err) {
-        console.log(rows);
         callback(null, rows);
+        return;
       }
+      callback(err);
     });
     connection.on("error", (err) => {
-      throw err;
+      callback(err);
       return;
     });
   });

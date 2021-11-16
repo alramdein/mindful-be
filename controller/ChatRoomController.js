@@ -16,9 +16,17 @@ const createChatRoom = async (req, res) => {
     req.body.owner_sub,
     req.body.partner_sub
   ).catch((err) => {
-    res.status(err.status).json({
+    if (err.status) {
+      return res.status(err.status).json({
+        success: false,
+        message: err.msg,
+      });
+    }
+    console.log(err);
+    res.status(500).json({
       success: false,
-      message: err.msg,
+      message:
+        "There was an error while getting all room. Please check the log.",
     });
   });
   console.log(chatRoomDetail);
@@ -50,9 +58,11 @@ const getAllRoomByOwnerSub = async (req, res) => {
     req.query.owner_sub,
     req.query.keyword
   ).catch((err) => {
+    console.log(err);
     res.status(500).json({
       success: false,
-      message: err,
+      message:
+        "There was an error while getting all room. Please check the log.",
     });
   });
 

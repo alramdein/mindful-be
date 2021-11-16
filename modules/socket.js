@@ -1,5 +1,6 @@
 const { Server } = require("socket.io");
 const MessageModel = require("../models/Message");
+const { convertToMySQLDate } = require("../helpers/date-converter");
 
 const initSocket = (server) => {
   const io = new Server(server, {
@@ -29,9 +30,7 @@ const initSocket = (server) => {
       /* store message to database */
       if (!newMessage.timestamp) {
         newMessage.timestamp = new Date().toISOString();
-        newMessage.timestamp = newMessage.timestamp
-          .replace(/T/g, " ")
-          .replace(/Z/g, "");
+        newMessage.timestamp = convertToMySQLDate(newMessage.timestamp);
         console.log(newMessage.timestamp);
       }
 

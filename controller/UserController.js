@@ -18,7 +18,13 @@ const addUser = async (req, res) => {
     req.body.name,
     req.body.picture,
     req.body.updated_at
-  );
+  ).catch((err) => {
+    console.error(err);
+    return res.status(500).json({
+      success: 0,
+      message: "There is an error while adding a user. Please check the log.",
+    });
+  });
 
   let msg = "Sucessfully add new user.";
   if (userRes === "User is already added") {
@@ -39,7 +45,16 @@ const getAllPartner = async (req, res) => {
     });
   }
 
-  const partners = await UserModel.getAllPartner(req.query.owner_sub);
+  const partners = await UserModel.getAllPartner(req.query.owner_sub).catch(
+    (err) => {
+      console.error(err);
+      return res.status(500).json({
+        success: 0,
+        message:
+          "There is an error while getting all partner. Please check the log.",
+      });
+    }
+  );
 
   return res.json({
     success: true,

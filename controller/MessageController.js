@@ -17,9 +17,11 @@ const updateReadMessage = async (req, res) => {
   }
 
   await MessageModel.updateMessageIsSeenByIds(messageIds).catch((err) => {
-    res.json({
+    console.log(err);
+    res.status(500).json({
       success: false,
-      message: err,
+      message:
+        "There was an error while updating message. Please check the log.",
     });
   });
 
@@ -39,12 +41,20 @@ const getAllMessageByRoomid = async (req, res) => {
 
   const messages = await MessageModel.getAllMessageByRoomid(
     req.query.room_id
-  ).catch((err) =>
-    res.status(err.status).json({
+  ).catch((err) => {
+    if (err.status) {
+      return res.status(err.status).json({
+        success: false,
+        message: err.msg,
+      });
+    }
+    console.log(err);
+    res.status(500).json({
       success: false,
-      message: err.msg,
-    })
-  );
+      message:
+        "There was an error while getting all room. Please check the log.",
+    });
+  });
 
   return res.json({
     success: true,

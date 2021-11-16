@@ -1,4 +1,5 @@
 const db = require("../database/mysql");
+const { convertToMySQLDate } = require("../helpers/date-converter");
 
 const checkUserExistBySub = (sub) =>
   new Promise(async (resolve, reject) => {
@@ -28,8 +29,9 @@ const checkUserExistBySub = (sub) =>
 const addUser = (sub, name, avatar, updated_at) =>
   new Promise(async (resolve, reject) => {
     try {
+      const updatedAt = convertToMySQLDate(updated_at);
       const query = `INSERT INTO users(sub, name, avatar, created_at, updated_at) 
-                        VALUES("${sub}", "${name}", "${avatar}", now(), "${updated_at}")`;
+                        VALUES("${sub}", "${name}", "${avatar}", now(), "${updatedAt}")`;
 
       db.executeQuery(query, (error, results) => {
         if (error) {
