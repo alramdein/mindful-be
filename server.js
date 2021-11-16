@@ -1,6 +1,5 @@
 const env = require("dotenv").config();
 const express = require("express");
-const crypto = require("crypto");
 const bodyParser = require("body-parser");
 
 const multer = require("multer");
@@ -23,8 +22,6 @@ initSocket(server);
 const router = require("./router");
 
 const PostModel = require("./models/Post");
-const MessageModel = require("./models/Message");
-const ChatRoomModel = require("./models/ChatRoom");
 
 app.use(express.static("build"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -97,33 +94,6 @@ app.post("/posts", upload.single("image"), async (req, res) => {
       });
     }
   );
-});
-
-app.post("/chat/room", async (req, res) => {
-  if (!req.body.owner_sub || !req.body.partner_id) {
-    return res.json({
-      success: false,
-      message: "Parameters is not satisfied.",
-    });
-  }
-
-  const roomid = crypto.randomBytes(3 * 4).toString("base64");
-
-  await ChatRoomModel.storeChatRoom(
-    roomid,
-    req.body.owner_sub,
-    req.body.partner_id
-  ).catch((err) => {
-    res.status(err.status).json({
-      success: false,
-      message: err.msg,
-    });
-  });
-
-  return res.json({
-    success: true,
-    roomid: roomid,
-  });
 });
 
 /* the rest of the router */

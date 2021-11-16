@@ -27,8 +27,13 @@ const initSocket = (server) => {
       io.to("" + newMessage.roomid).emit("newMessage", newMessage);
 
       /* store message to database */
-      if (!newMessage.timestamp)
+      if (!newMessage.timestamp) {
         newMessage.timestamp = new Date().toISOString();
+        newMessage.timestamp = newMessage.timestamp
+          .replace(/T/g, " ")
+          .replace(/Z/g, "");
+        console.log(newMessage.timestamp);
+      }
 
       MessageModel.storeMessage(
         newMessage.user_id,

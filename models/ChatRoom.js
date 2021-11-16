@@ -72,7 +72,43 @@ const getRoomId = (roomidString) =>
     }
   });
 
+const getAllRoomByOwnerSub = (ownerSub, keyword) =>
+  new Promise((resolve, reject) => {
+    try {
+      // const room
+      if (!keyword) keyword = "";
+
+      const query = `SELECT up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
+                        TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute
+                    FROM chat_rooms cr 
+                    JOIN users uo ON cr.owner_id = uo.id 
+                    JOIN users up ON cr.partner_id = up.id 
+                    JOIN messages m ON m.id = (
+                        SELECT id FROM messages
+                        WHERE room_id = cr.room_id
+                        ORDER BY timestamp DESC
+                        LIMIT 1 
+                    )
+                    WHERE uo.sub = "${ownerSub}"
+                    AND up.name LIKE "%${keyword}%"
+                    AND cr.room_id = m.room_id`;
+
+      db.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+        resolve(results);
+      });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+
 module.exports = {
   storeChatRoom,
   getRoomId,
+  getAllRoomByOwnerSub,
 };
