@@ -11,7 +11,7 @@ const createChatRoom = async (req, res) => {
 
   const roomid = crypto.randomBytes(3 * 4).toString("base64");
 
-  await ChatRoomModel.storeChatRoom(
+  const partnerDetails = await ChatRoomModel.storeChatRoom(
     roomid,
     req.body.owner_sub,
     req.body.partner_id
@@ -25,11 +25,14 @@ const createChatRoom = async (req, res) => {
   return res.json({
     success: true,
     roomid: roomid,
+    partner_detail: {
+      ...partnerDetails[0],
+    },
   });
 };
 
 const getAllRoomByOwnerSub = async (req, res) => {
-  if (!req.body.owner_sub) {
+  if (!req.query.owner_sub) {
     return res.json({
       success: false,
       message: "Parameter owner_sub is not satisfied.",
@@ -37,8 +40,8 @@ const getAllRoomByOwnerSub = async (req, res) => {
   }
 
   const partnerRooms = await ChatRoomModel.getAllRoomByOwnerSub(
-    req.body.owner_sub,
-    req.body.keyword
+    req.query.owner_sub,
+    req.query.keyword
   );
 
   return res.json({

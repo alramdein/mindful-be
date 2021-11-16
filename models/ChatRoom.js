@@ -31,14 +31,15 @@ const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
 
-      db.query(query, (error, results) => {
+      db.query(query, async (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
           return;
         }
         console.log("Chat room stored.");
-        resolve();
+        const partnerDetail = await UserModel.getUserById(partner_id);
+        resolve(partnerDetail);
       });
     } catch (err) {
       console.log(err);

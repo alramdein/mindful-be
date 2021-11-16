@@ -94,9 +94,31 @@ const getAllPartner = (ownerSub) =>
     }
   });
 
+const getUserById = (id) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const query = `SELECT sub, name, avatar FROM users 
+                    WHERE id = ${id}`;
+
+      db.query(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+
+        resolve(results);
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+
 module.exports = {
   addUser,
   isUserExist,
   getUserIdBySub,
   getAllPartner,
+  getUserById,
 };
