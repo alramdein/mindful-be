@@ -16,7 +16,7 @@ const initSocket = (server) => {
     });
 
     socket.on("join", (roomid) => {
-      // console.log('roomid: '+roomid);
+      // console.log("roomid: " + roomid);
       socket.join(roomid);
     });
 
@@ -24,7 +24,7 @@ const initSocket = (server) => {
 
     socket.on("newMessage", (newMessage) => {
       /* sending message to client in a specific room */
-      io.to("" + newMessage.roomid).emit("newMessage", newMessage);
+      io.to("" + newMessage.room_id).emit("newMessage", newMessage);
 
       /* store message to database */
       if (!newMessage.timestamp) {
