@@ -79,7 +79,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
       // const room
       if (!keyword) keyword = "";
 
-      const query = `SELECT up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
+      const query = `SELECT r.roomid as room_id, up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
                         TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute
                     FROM chat_rooms cr 
                     JOIN users uo ON cr.owner_id = uo.id 
@@ -90,6 +90,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                         ORDER BY timestamp DESC
                         LIMIT 1 
                     )
+                    JOIN rooms r ON cr.room_id = r.id
                     WHERE uo.sub = "${ownerSub}"
                     AND up.name LIKE "%${keyword}%"
                     AND cr.room_id = m.room_id`;
