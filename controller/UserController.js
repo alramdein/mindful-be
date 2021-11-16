@@ -13,28 +13,33 @@ const addUser = async (req, res) => {
     });
   }
 
-  await UserModel.addUser(
+  const userRes = await UserModel.addUserProfile(
     req.body.sub,
     req.body.name,
     req.body.picture,
     req.body.updated_at
   );
 
+  let msg = "Sucessfully add new user.";
+  if (userRes === "User is already added") {
+    msg = userRes;
+  }
+
   return res.json({
     success: true,
-    message: "Sucessfully add new user.",
+    message: msg,
   });
 };
 
 const getAllPartner = async (req, res) => {
-  if (!req.body.owner_sub) {
+  if (!req.query.owner_sub) {
     return res.json({
       success: false,
       message: "Parameter owner_sub is not satisfied.",
     });
   }
 
-  const partners = await UserModel.getAllPartner(req.body.owner_sub);
+  const partners = await UserModel.getAllPartner(req.query.owner_sub);
 
   return res.json({
     success: true,

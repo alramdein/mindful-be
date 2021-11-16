@@ -25,6 +25,31 @@ const isUserExist = (sub) =>
     }
   });
 
+const checkUserExistBySub = (sub) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const query = `SELECT * FROM users WHERE sub = "${sub}"`;
+
+      db.executeQuery(query, (error, results) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+          return;
+        }
+
+        if (results.length > 0) {
+          resolve(1);
+          return;
+        }
+
+        resolve(0);
+      });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+
 const addUser = (sub, name, avatar, updated_at) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -40,6 +65,25 @@ const addUser = (sub, name, avatar, updated_at) =>
         console.log("User added.");
         resolve();
       });
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  });
+
+const addUserProfile = (sub, name, avatar, updated_at) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const isUserExist = await checkUserExistBySub(sub);
+
+      if (!isUserExist) {
+        await addUser(sub, name, avatar, updated_at).catch((err) => {
+          reject(err);
+        });
+        resolve();
+        return;
+      }
+      resolve("User is already added");
     } catch (err) {
       console.error(err);
       reject(err);
@@ -121,4 +165,5 @@ module.exports = {
   getUserIdBySub,
   getAllPartner,
   getUserById,
+  addUserProfile,
 };
