@@ -6,7 +6,7 @@ const storeRoomid = (roomid) =>
     try {
       const query = `INSERT INTO rooms(roomid) VALUES("${roomid}")`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -32,7 +32,7 @@ const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
 
-      db.query(query, async (error, results) => {
+      db.executeQuery(query, async (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -53,7 +53,7 @@ const getRoomId = (roomidString) =>
     try {
       const query = `SELECT id FROM rooms WHERE roomid = "${roomidString}"`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -95,7 +95,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                     WHERE uo.sub = "${ownerSub}"
                     AND up.name LIKE "%${keyword}%"`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);

@@ -1,32 +1,32 @@
 const mysql = require("mysql");
 
-let connection;
+const pool = mysql.createPool({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+});
 
-const handleDisconnect = () => {
-  connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-  });
-
-  connection.connect((err) => {
+const executeQuery = (query, callback) => {
+  pool.getConnection((err, connection) => {
     if (err) {
-      console.log("error when connecting to db:", err);
-      setTimeout(handleDisconnect, 2000);
-    }
-  });
-
-  connection.on("error", (err) => {
-    console.log("db error", err);
-    if (err.code === "PROTOCOL_CONNECTION_LOST") {
-      handleDisconnect();
-    } else {
+      connection.release();
       throw err;
     }
+    connection.query(query, (err, rows) => {
+      connection.release();
+      if (!err) {
+        console.log(rows);
+        callback(null, rows);
+      }
+    });
+    connection.on("error", (err) => {
+      throw err;
+      return;
+    });
   });
 };
 
-handleDisconnect();
-
-module.exports = connection;
+module.exports = {
+  executeQuery,
+};

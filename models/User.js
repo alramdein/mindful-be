@@ -5,7 +5,7 @@ const isUserExist = (sub) =>
     try {
       const query = `SELECT * FROM users WHERE sub = ${sub}`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -31,7 +31,7 @@ const addUser = (sub, name, avatar, updated_at) =>
       const query = `INSERT INTO users(sub, name, avatar, created_at, updated_at) 
                         VALUES("${sub}", "${name}", "${avatar}", now(), "${updated_at}")`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -51,7 +51,7 @@ const getUserIdBySub = (sub) =>
     try {
       const query = `SELECT * FROM users WHERE sub = "${sub}"`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -79,7 +79,7 @@ const getAllPartner = (ownerSub) =>
     try {
       const query = `SELECT * FROM users WHERE sub NOT LIKE "${ownerSub}"`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -100,7 +100,7 @@ const getUserById = (id) =>
       const query = `SELECT sub, name, avatar FROM users 
                     WHERE id = ${id}`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);

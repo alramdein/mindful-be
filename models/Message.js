@@ -1,14 +1,16 @@
 const db = require("../database/mysql");
 const ChatRoomModel = require("./ChatRoom");
+const UserModel = require("./User");
 
-const storeMessage = (user_id, roomidString, message, timestamp) =>
+const storeMessage = (user_sub, roomidString, message, timestamp) =>
   new Promise(async (resolve, reject) => {
     try {
       const room_id = await ChatRoomModel.getRoomId(roomidString);
+      const user_id = await UserModel.getUserIdBySub(user_sub);
       const query = `INSERT INTO messages(user_id, room_id, message, timestamp, isSeen) 
                       VALUES(${user_id}, ${room_id}, "${message}", "${timestamp}", 0)`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -38,7 +40,7 @@ const updateMessageIsSeenByIds = (ids) =>
       const query = `UPDATE messages SET isSeen = true 
                       WHERE id IN ${convertedIds}`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -63,7 +65,7 @@ const getAllMessageByRoomid = (roomidString) =>
                     JOIN rooms r ON m.room_id = r.id
                     WHERE m.room_id = ${room_id}`;
 
-      db.query(query, (error, results) => {
+      db.executeQuery(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);

@@ -8,7 +8,7 @@ function createPost(description, image_url, timestamp, tags, callback) {
 
   const params = [description, image_url, timestamp, JSON.stringify(tags)];
 
-  db.query(query, params, (error, result) => {
+  db.executeQuery(query, params, (error, result) => {
     if (error) {
       callback(error);
       return;
@@ -22,7 +22,7 @@ function getPosts(callback) {
     SELECT * FROM posts
     `;
 
-  db.query(query, (error, results) => {
+  db.executeQuery(query, (error, results) => {
     if (error) {
       callback(error);
       return;

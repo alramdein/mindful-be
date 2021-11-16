@@ -42,7 +42,12 @@ const getAllRoomByOwnerSub = async (req, res) => {
   const partnerRooms = await ChatRoomModel.getAllRoomByOwnerSub(
     req.query.owner_sub,
     req.query.keyword
-  );
+  ).catch((err) => {
+    res.status(500).json({
+      success: false,
+      message: err,
+    });
+  });
 
   return res.json({
     success: true,
