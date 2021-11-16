@@ -4,7 +4,7 @@ const addUser = async (req, res) => {
   if (
     !req.body.sub ||
     !req.body.name ||
-    !req.body.avatar ||
+    !req.body.picture ||
     !req.body.updated_at
   ) {
     return res.json({
