@@ -1,6 +1,7 @@
 const env = require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
@@ -26,6 +27,8 @@ const PostModel = require("./models/Post");
 app.use(express.static("build"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
+
+app.use(cors());
 
 // Getting images from S3 bucket
 app.get("/images/:filename", (req, res) => {
