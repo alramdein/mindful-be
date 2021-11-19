@@ -118,6 +118,8 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
     try {
       if (!keyword) keyword = "";
 
+      console.log(keyword);
+
       const query = `SELECT r.roomid as room_id, up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
                         TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute
                     FROM chat_rooms cr 
@@ -131,7 +133,10 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                     )
                     JOIN rooms r ON cr.room_id = r.id
                     WHERE uo.sub = "${ownerSub}"
-                    AND up.name LIKE "%${keyword}%"`;
+                    AND ( (up.name = "" OR up.name IS NULL) 
+                    OR ( up.name LIKE "${keyword}%" 
+                    OR up.name REGEXP "[:space:]${keyword}*" )
+                      )`;
 
       db.executeQuery(query, (error, results) => {
         if (error) {
