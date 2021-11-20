@@ -63,9 +63,6 @@ const updateMessageIsSeenByRoomId = (roomidString, ownerSub) =>
                       WHERE room_id = (
                         SELECT id FROM rooms WHERE roomid = "${roomidString}"
                       ) 
-                      AND user_id = (
-                        SELECT id FROM users WHERE sub = "${ownerSub}"
-                      )
                       AND is_seen = 0`;
 
       db.executeQuery(query, (error, results) => {
@@ -74,9 +71,12 @@ const updateMessageIsSeenByRoomId = (roomidString, ownerSub) =>
           reject(error);
           return;
         }
-
+        if (results.affectedRows === 0) {
+          resolve(0);
+          return;
+        }
         console.log("Message updated.");
-        resolve();
+        resolve(1);
       });
     } catch (err) {
       console.error(err);
@@ -91,7 +91,7 @@ const getAllMessageByRoomid = (roomidString) =>
       const query = `SELECT *, m.id as id FROM messages m 
                     JOIN users u ON m.user_id = u.id
                     JOIN rooms r ON m.room_id = r.id
-                    WHERE m.room_id = ${room_id}`;
+                    WHERE m.room_id = ${room_id} ORDER BY timestamp ASC`;
 
       db.executeQuery(query, (error, results) => {
         if (error) {

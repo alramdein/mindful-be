@@ -14,6 +14,7 @@ const initSocket = (server) => {
     console.log("a user connected");
     socket.on("disconnect", (data) => {
       console.log(`socket disconnect`);
+      console.log(data);
     });
 
     socket.on("join", (roomid) => {
@@ -24,6 +25,7 @@ const initSocket = (server) => {
     socket.on("checkUser", (roomid) => {});
 
     socket.on("newMessage", (newMessage) => {
+      console.log("newMessage");
       /* sending message to client in a specific room */
       io.to("" + newMessage.room_id).emit("newMessage", newMessage);
 
@@ -43,7 +45,13 @@ const initSocket = (server) => {
     });
 
     socket.on("isOnline", (isOnline) => {
-      socket.broadcast.to("" + isOnline.room_id).emit("isOnline", isOnline);
+      console.log("isOnline");
+      socket.to("" + isOnline.room_id).emit("isOnline", isOnline);
+    });
+
+    socket.on("updatePartnerRooms", ({ room_id }) => {
+      console.log("updatePartnerRooms");
+      socket.to("" + room_id).emit("updatePartnerRooms", {});
     });
   });
 };

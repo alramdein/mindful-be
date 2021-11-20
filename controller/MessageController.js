@@ -39,7 +39,7 @@ const updateReadMessageByRoomId = async (req, res) => {
     });
   }
 
-  await MessageModel.updateMessageIsSeenByRoomId(
+  const updatedMessages = await MessageModel.updateMessageIsSeenByRoomId(
     req.body.room_id,
     req.body.owner_sub
   ).catch((err) => {
@@ -50,6 +50,11 @@ const updateReadMessageByRoomId = async (req, res) => {
         "There was an error while updating message. Please check the log.",
     });
   });
+
+  if (updatedMessages === 0) {
+    console.log("No message were updated");
+    /* You can improve more here */
+  }
 
   return res.json({
     success: true,

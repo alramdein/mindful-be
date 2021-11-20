@@ -132,6 +132,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                           JOIN chat_rooms cr2 ON cr2.room_id = m2.room_id
                           WHERE m2.room_id = m.room_id
                           AND cr2.partner_id = cr.partner_id
+                          AND m2.user_id <> uo.id
                           AND m2.is_seen = 0
                         ) AS unread_messages
                     FROM chat_rooms cr 
@@ -144,11 +145,21 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                         LIMIT 1 
                     )
                     JOIN rooms r ON cr.room_id = r.id
-                    WHERE uo.sub = "${ownerSub}"
+                    WHERE (uo.sub = "${ownerSub}")
                     AND ( (up.name = "" OR up.name IS NULL) 
-                    OR ( up.name LIKE "${keyword}%" 
-                    OR up.name REGEXP "[:space:]${keyword}*" )
-                      )`;
+                    OR ( if (uo.id = cr.partner_id, (
+                      SELECT u3.name FROM users u3
+                      JOIN chat_rooms cr3 ON cr3.room_id = cr.room_id AND cr3.owner_id = u3.id
+                      WHERE cr3.partner_id = uo.id
+                    ), up.name)  LIKE "${keyword}%"
+
+                    OR if (uo.id = cr.partner_id, (
+                        SELECT u3.name FROM users u3
+                        JOIN chat_rooms cr3 ON cr3.room_id = cr.room_id AND cr3.owner_id = u3.id
+                        WHERE cr3.partner_id = uo.id
+                      ), up.name) REGEXP "[:space:]${keyword}+" )
+                    
+                    )`;
 
       db.executeQuery(query, (error, results) => {
         if (error) {
