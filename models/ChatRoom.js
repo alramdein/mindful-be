@@ -127,7 +127,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                           JOIN chat_rooms cr2 ON cr2.room_id = m2.room_id
                           WHERE m2.room_id = m.room_id
                           AND cr2.partner_id = cr.partner_id
-                          AND is_seen = 0
+                          AND m2.is_seen = 0
                         ) AS unread_messages
                     FROM chat_rooms cr 
                     JOIN users uo ON cr.owner_id = uo.id 
