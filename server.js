@@ -1,5 +1,8 @@
+const env = require("dotenv").config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
+
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -8,13 +11,24 @@ const util = require("util");
 const unlinkFile = util.promisify(fs.unlink);
 
 const path = require("path");
-const env = require("dotenv").config();
 
 const app = express();
-const database = require("./database");
 const s3 = require("./s3");
-app.use(cors);
+const { initSocket } = require("./modules/socket");
+
+const http = require("http");
+const server = http.createServer(app);
+initSocket(server);
+
+const router = require("./router");
+
+const PostModel = require("./models/Post");
+
 app.use(express.static("build"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.use(cors());
 
 // Getting images from S3 bucket
 app.get("/images/:filename", (req, res) => {
@@ -31,7 +45,7 @@ app.get("/images/:filename", (req, res) => {
 // });
 
 app.get("/posts", (req, res) => {
-  database.getPosts((error, posts) => {
+  PostModel.getPosts((error, posts) => {
     console.log("get posts", error, posts);
     if (error) {
       res.send({ error: error.message });
@@ -56,12 +70,12 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   const month = date.getMonth() + 1;
   const day = date.getDate();
 
-  const timestamp = `${year}-${month}-${day}`
+  const timestamp = `${year}-${month}-${day}`;
   // const timestamp = currentDate.getTime();
   const tags = req.body.tags;
 
   const image_url = `/images/${filename}`;
-  database.createPost(
+  PostModel.createPost(
     description,
     image_url,
     timestamp,
@@ -81,13 +95,15 @@ app.post("/posts", upload.single("image"), async (req, res) => {
         timestamp,
         tags,
       });
-
     }
   );
 });
 
+/* the rest of the router */
+app.use(router);
+
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`listening on port ${port} llll`);
 });
