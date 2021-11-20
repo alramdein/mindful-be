@@ -48,6 +48,7 @@ CREATE TABLE messages (
   CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+ALTER TABLE messages RENAME COLUMN isSeen TO is_seen;
 -- CREATE TABLE moods(
 --    id INTEGER PRIMARY KEY AUTO_INCREMENT,
 --    `timestamp` TIMESTAMP DEFAULT NOW(),

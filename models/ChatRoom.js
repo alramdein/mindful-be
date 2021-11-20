@@ -53,7 +53,6 @@ const checkUserChatExist = (owner_id, partner_id) =>
 const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
   new Promise(async (resolve, reject) => {
     try {
-      const room_id = await storeRoomid(roomidString);
       const owner_id = await UserModel.getUserIdBySub(ownerSub);
       const partner_id = await UserModel.getUserIdBySub(partnerSub);
       const isUserChatExist = await checkUserChatExist(owner_id, partner_id);
@@ -67,6 +66,7 @@ const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
         return;
       }
 
+      const room_id = await storeRoomid(roomidString);
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
 
@@ -127,7 +127,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                           JOIN chat_rooms cr2 ON cr2.room_id = m2.room_id
                           WHERE m2.room_id = m.room_id
                           AND cr2.partner_id = cr.partner_id
-                          AND isSeen = 0
+                          AND is_seen = 0
                         ) AS unread_messages
                     FROM chat_rooms cr 
                     JOIN users uo ON cr.owner_id = uo.id 

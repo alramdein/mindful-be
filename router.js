@@ -9,7 +9,7 @@ const ChatRoomController = require("./controller/ChatRoomController");
 router.post("/user", UserController.addUser);
 router.get("/user/partner", UserController.getAllPartner);
 
-router.put("/message/read", MessageController.updateReadMessage);
+router.put("/message/read", MessageController.updateReadMessageByRoomId);
 router.get("/message", MessageController.getAllMessageByRoomid);
 
 router.post("/chat/room", ChatRoomController.createChatRoom);

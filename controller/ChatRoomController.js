@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const short = require("short-uuid");
 const ChatRoomModel = require("../models/ChatRoom");
 
 const createChatRoom = async (req, res) => {
@@ -9,7 +9,7 @@ const createChatRoom = async (req, res) => {
     });
   }
 
-  let roomid = crypto.randomBytes(3 * 4).toString("base64");
+  let roomid = short.generate();
 
   const chatRoomDetail = await ChatRoomModel.storeChatRoom(
     roomid,

@@ -1,6 +1,6 @@
 const MessageModel = require("../models/Message");
 
-const updateReadMessage = async (req, res) => {
+const updateReadMessageByIds = async (req, res) => {
   if (!req.body.message_ids) {
     return res.json({
       success: false,
@@ -27,7 +27,33 @@ const updateReadMessage = async (req, res) => {
 
   return res.json({
     success: true,
-    message: "Successfully update message's isSeen",
+    message: "Successfully update message's is_seen",
+  });
+};
+
+const updateReadMessageByRoomId = async (req, res) => {
+  if (!req.body.room_id && !req.body.owner_sub) {
+    return res.json({
+      success: false,
+      message: "Parameters is not satisfied.",
+    });
+  }
+
+  await MessageModel.updateMessageIsSeenByRoomId(
+    req.body.room_id,
+    req.body.owner_sub
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message:
+        "There was an error while updating message. Please check the log.",
+    });
+  });
+
+  return res.json({
+    success: true,
+    message: "Successfully update message's is_seen",
   });
 };
 
@@ -63,6 +89,7 @@ const getAllMessageByRoomid = async (req, res) => {
 };
 
 module.exports = {
-  updateReadMessage,
+  updateReadMessageByIds,
+  updateReadMessageByRoomId,
   getAllMessageByRoomid,
 };
