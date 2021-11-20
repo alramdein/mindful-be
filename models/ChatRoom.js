@@ -120,7 +120,12 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
 
       console.log(keyword);
 
-      const query = `SELECT r.roomid as room_id, up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
+      const query = `SELECT r.roomid as room_id, if (uo.id = cr.partner_id, (
+                          SELECT u3.name FROM users u3
+                          JOIN chat_rooms cr3 ON cr3.room_id = cr.room_id AND cr3.owner_id = u3.id
+                          WHERE cr3.partner_id = uo.id
+                        ), up.name) as partner_name, 
+                        up.avatar as partner_avatar, m.message as last_partner_message,
                         TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute,
                         (
                           SELECT COUNT(*) FROM messages m2
