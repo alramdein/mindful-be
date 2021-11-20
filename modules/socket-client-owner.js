@@ -1,7 +1,7 @@
 const io = require("socket.io-client");
 const socket = io("http://localhost:8080");
 
-const roomid = "ZnEz4iR7Ls2LmQ9M";
+const roomid = "Nngdys/v2EDHAY4V";
 
 socket.on("connect", () => {
   console.log(socket.connected);
@@ -10,10 +10,10 @@ socket.on("connect", () => {
 socket.emit("join", roomid);
 
 socket.emit("newMessage", {
-  sub: "aasdaggg",
+  sub: "asdasfsaf",
   room_id: roomid,
   message: "halow?",
-  timestamp: "2021-11-01 20:10:02",
+  timestamp: new Date().toISOString().replace(/T/g, " ").replace(/Z/g, ""),
 });
 
 socket.on("newMessage", (newMessage) => {

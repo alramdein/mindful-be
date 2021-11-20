@@ -60,6 +60,11 @@ const getAllRoomByOwnerSub = async (req, res) => {
       req.query.keyword
     );
 
+    for (const [key, value] of Object.entries(partnerRooms)) {
+      if (value && value.last_chat_minute === 0)
+        partnerRooms[key].last_chat_minute = 1;
+    }
+
     return res.json({
       success: true,
       count: partnerRooms.length,
