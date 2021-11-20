@@ -125,7 +125,8 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                         (
                           SELECT COUNT(*) FROM messages m2
                           JOIN chat_rooms cr2 ON cr2.room_id = m2.room_id
-                          WHERE cr2.partner_id = cr.partner_id
+                          WHERE m2.room_id = m.room_id
+                          AND cr2.partner_id = cr.partner_id
                           AND isSeen = 0
                         ) AS unread_messages
                     FROM chat_rooms cr 
