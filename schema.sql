@@ -49,6 +49,10 @@ CREATE TABLE messages (
 );
 
 ALTER TABLE messages RENAME COLUMN isSeen TO is_seen;
+/* OR */
+ALTER TABLE dbname.messages CHANGE isSeen is_seen tinyint(1) NULL;
+
+
 -- CREATE TABLE moods(
 --    id INTEGER PRIMARY KEY AUTO_INCREMENT,
 --    `timestamp` TIMESTAMP DEFAULT NOW(),
