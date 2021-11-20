@@ -29,7 +29,7 @@ const createChatRoom = async (req, res) => {
         "There was an error while getting all room. Please check the log.",
     });
   });
-  console.log(chatRoomDetail);
+
   if (chatRoomDetail.roomid) {
     roomid = chatRoomDetail.roomid;
     partnerDetail = chatRoomDetail.partner_detail;
@@ -39,7 +39,7 @@ const createChatRoom = async (req, res) => {
 
   return res.json({
     success: true,
-    roomid: roomid,
+    room_id: roomid,
     partner_detail: {
       ...partnerDetail,
     },
@@ -47,29 +47,32 @@ const createChatRoom = async (req, res) => {
 };
 
 const getAllRoomByOwnerSub = async (req, res) => {
-  if (!req.query.owner_sub) {
-    return res.json({
-      success: false,
-      message: "Parameter owner_sub is not satisfied.",
-    });
-  }
+  try {
+    if (!req.query.owner_sub) {
+      return res.json({
+        success: false,
+        message: "Parameter owner_sub is not satisfied.",
+      });
+    }
 
-  const partnerRooms = await ChatRoomModel.getAllRoomByOwnerSub(
-    req.query.owner_sub,
-    req.query.keyword
-  ).catch((err) => {
+    const partnerRooms = await ChatRoomModel.getAllRoomByOwnerSub(
+      req.query.owner_sub,
+      req.query.keyword
+    );
+
+    return res.json({
+      success: true,
+      count: partnerRooms.length,
+      data: partnerRooms,
+    });
+  } catch (err) {
     console.log(err);
     res.status(500).json({
       success: false,
       message:
         "There was an error while getting all room. Please check the log.",
     });
-  });
-
-  return res.json({
-    success: true,
-    data: partnerRooms,
-  });
+  }
 };
 
 module.exports = {

@@ -121,7 +121,13 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
       console.log(keyword);
 
       const query = `SELECT r.roomid as room_id, up.name as partner_name, up.avatar as partner_avatar, m.message as last_partner_message,
-                        TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute
+                        TIMESTAMPDIFF(MINUTE, CONVERT_TZ(m.timestamp, '+00:00', @@session.time_zone), now()) as last_chat_minute,
+                        (
+                          SELECT COUNT(*) FROM messages m2
+                          JOIN chat_rooms cr2 ON cr2.room_id = m2.room_id
+                          WHERE cr2.partner_id = cr.partner_id
+                          AND isSeen = 0
+                        ) AS unread_messages
                     FROM chat_rooms cr 
                     JOIN users uo ON cr.owner_id = uo.id 
                     JOIN users up ON cr.partner_id = up.id 

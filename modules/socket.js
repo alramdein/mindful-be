@@ -41,6 +41,10 @@ const initSocket = (server) => {
         newMessage.timestamp
       );
     });
+
+    socket.on("isOnline", (isOnline) => {
+      socket.broadcast.to("" + isOnline.room_id).emit("isOnline", isOnline);
+    });
   });
 };
 
