@@ -1,4 +1,4 @@
-const db = require("../database/mysql");
+const { connection } = require("../database");
 const UserModel = require("../models/User");
 
 const storeRoomid = (roomid) =>
@@ -6,7 +6,7 @@ const storeRoomid = (roomid) =>
     try {
       const query = `INSERT INTO rooms(roomid) VALUES("${roomid}")`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -31,7 +31,7 @@ const checkUserChatExist = (owner_id, partner_id) =>
                     OR (cr.owner_id = ${partner_id} AND cr.partner_id = ${owner_id})
                     LIMIT 1`;
 
-      db.executeQuery(query, async (error, results) => {
+      connection.query(query, async (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -70,7 +70,7 @@ const storeChatRoom = (roomidString, ownerSub, partnerSub) =>
       const query = `INSERT INTO chat_rooms(room_id, owner_id, partner_id) 
                       VALUES(${room_id}, ${owner_id}, ${partner_id})`;
 
-      db.executeQuery(query, async (error, results) => {
+      connection.query(query, async (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -91,7 +91,7 @@ const getRoomId = (roomidString) =>
     try {
       const query = `SELECT id FROM rooms WHERE roomid = "${roomidString}"`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -161,7 +161,7 @@ const getAllRoomByOwnerSub = (ownerSub, keyword) =>
                     
                     )`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);

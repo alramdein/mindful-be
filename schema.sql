@@ -7,7 +7,8 @@ CREATE TABLE posts (
   description VARCHAR (255),
   title VARCHAR (255),
   image_url VARCHAR (255),
-  `timestamp` TIMESTAMP DEFAULT NOW()
+  `timestamp` TIMESTAMP DEFAULT NOW(),
+  tags VARCHAR (255)
 );
 
 CREATE TABLE users (

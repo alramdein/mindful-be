@@ -14,6 +14,7 @@ const path = require("path");
 
 const app = express();
 const s3 = require("./s3");
+const database = require("./database");
 const { initSocket } = require("./modules/socket");
 
 const http = require("http");
@@ -21,8 +22,6 @@ const server = http.createServer(app);
 initSocket(server);
 
 const router = require("./router");
-
-const PostModel = require("./models/Post");
 
 app.use(express.static("build"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -45,7 +44,7 @@ app.get("/images/:filename", (req, res) => {
 // });
 
 app.get("/posts", (req, res) => {
-  PostModel.getPosts((error, posts) => {
+  database.getPosts((error, posts) => {
     console.log("get posts", error, posts);
     if (error) {
       res.send({ error: error.message });
@@ -75,7 +74,7 @@ app.post("/posts", upload.single("image"), async (req, res) => {
   const tags = req.body.tags;
 
   const image_url = `/images/${filename}`;
-  PostModel.createPost(
+  database.createPost(
     description,
     image_url,
     timestamp,

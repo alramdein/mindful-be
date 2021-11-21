@@ -1,4 +1,4 @@
-const db = require("../database/mysql");
+const { connection } = require("../database");
 const { convertToMySQLDate } = require("../helpers/date-converter");
 
 const checkUserExistBySub = (sub) =>
@@ -6,7 +6,7 @@ const checkUserExistBySub = (sub) =>
     try {
       const query = `SELECT * FROM users WHERE sub = "${sub}"`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -33,7 +33,7 @@ const addUser = (sub, name, avatar, updated_at) =>
       const query = `INSERT INTO users(sub, name, avatar, created_at, updated_at) 
                         VALUES("${sub}", "${name}", "${avatar}", now(), "${updatedAt}")`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -72,7 +72,7 @@ const getUserIdBySub = (sub) =>
     try {
       const query = `SELECT * FROM users WHERE sub = "${sub}"`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -100,7 +100,7 @@ const getAllPartner = (ownerSub) =>
     try {
       const query = `SELECT * FROM users WHERE sub NOT LIKE "${ownerSub}"`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);
@@ -121,7 +121,7 @@ const getUserById = (id) =>
       const query = `SELECT sub, name, avatar FROM users 
                     WHERE id = ${id}`;
 
-      db.executeQuery(query, (error, results) => {
+      connection.query(query, (error, results) => {
         if (error) {
           console.log(error);
           reject(error);

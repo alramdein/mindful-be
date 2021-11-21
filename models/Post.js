@@ -1,4 +1,4 @@
-const db = require("../database/mysql");
+const { connection } = require("../database");
 
 function createPost(description, image_url, timestamp, tags, callback) {
   const query = `
@@ -8,7 +8,7 @@ function createPost(description, image_url, timestamp, tags, callback) {
 
   const params = [description, image_url, timestamp, JSON.stringify(tags)];
 
-  db.executeQuery(query, params, (error, result) => {
+  connection.query(query, params, (error, result) => {
     if (error) {
       callback(error);
       return;
@@ -22,7 +22,7 @@ function getPosts(callback) {
     SELECT * FROM posts
     `;
 
-  db.executeQuery(query, (error, results) => {
+  connection.query(query, (error, results) => {
     if (error) {
       callback(error);
       return;
