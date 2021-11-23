@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const MessageModel = require("../models/Message");
+const database = require("../database");
 const { convertToMySQLDate } = require("../helpers/date-converter");
 
 const initSocket = (server) => {
@@ -36,7 +36,7 @@ const initSocket = (server) => {
         console.log(newMessage.timestamp);
       }
 
-      MessageModel.storeMessage(
+      database.storeMessage(
         newMessage.sub,
         newMessage.room_id,
         newMessage.message,
